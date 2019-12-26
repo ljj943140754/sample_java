@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sample.mapper.WorkerMapper">
+
+    <!-- 开启二级缓存 -->
+    <!-- <cache type="org.mybatis.caches.ehcache.LoggingEhcache"/> -->
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.sample.entity.Worker">
+        <id column="wk_id" property="wk_id" />
+        <result column="wk_num" property="wk_num" />
+        <result column="wk_type" property="wk_type" />
+        <result column="wk_phone" property="wk_phone" />
+        <result column="wk_password" property="wk_password" />
+        <result column="wk_name" property="wk_name" />
+        <result column="wk_creation" property="wk_creation" />
+        <result column="wk_lastupdated" property="wk_lastupdated" />
+        <result column="wk_isdel" property="wk_isdel" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        wk_id, wk_num, wk_type, wk_phone, wk_name, wk_creation,wk_lastupdated, wk_isdel
+    </sql>
+    <!--  -->
+    
+    <!-- 员工登陆接口 -->
+    <select id="login" parameterType="com.sample.entity.Worker" resultMap="BaseResultMap">
+    	select <include refid="Base_Column_List"/>
+    	from worker 
+    	where wk_num=#{wk_num} and wk_password=MD5(#{wk_password})
+    </select>
+    
+    <!-- 员工条件查询接口 -->
+    <select id="selectQuery" parameterType="com.sample.entity.Worker" resultMap="BaseResultMap">
+    	select <include refid="Base_Column_List"/>
+    	from worker 
+    	where 1
+    	<if test="wk_id!=null">and wk_id=#{wk_id}</if>
+    	<if test="wk_num!=null">and wk_num like concat('%',#{wk_num},'%')</if>
+    	<if test="wk_type!=null">and wk_type=#{wk_type}</if>
+    	<if test="wk_phone!=null">and wk_phone like concat('%',#{wk_phone},'%')</if>
+    	<if test="wk_name!=null">and wk_name like concat('%',#{wk_name},'%')</if>
+    	<if test="wk_creation!=null">and datediff(wk_creation,#{wk_creation})=0</if>
+    	<if test="wk_isdel!=null">and wk_isdel=#{wk_isdel}</if>
+    </select>
+    
+    <!-- 员工添加接口 -->
+    <insert id="insert" parameterType="com.sample.entity.Worker">
+    	insert into worker values(null,#{wk_num},#{wk_type},#{wk_phone},md5('123456'),#{wk_name},now(),now(),#{wk_isdel}) 
+    </insert>
+    
+    <!-- 员工删除接口 -->
+    <delete id="delete" parameterType="com.sample.entity.Worker">
+    	delete from worker where wk_id=#{wk_id}
+    </delete>
+    
+    <!-- 员工修改接口 -->
+    <update id="update" parameterType="com.sample.entity.Worker">
+    	update worker set
+    	<if test="wk_type!=null">wk_type=#{wk_type},</if>
+    	<if test="wk_phone!=null">wk_phone=#{wk_phone},</if>
+    	<if test="wk_password!=null">wk_password=md5(#{wk_password}),</if>
+    	<if test="wk_name!=null">wk_name=#{wk_name},</if>
+    	<if test="wk_isdel!=null">wk_isdel=#{wk_isdel},</if>
+    	wk_lastupdated=now()
+    	where wk_id=#{wk_id}
+    </update>
+</mapper>

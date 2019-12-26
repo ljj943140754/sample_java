@@ -1,0 +1,70 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sample.mapper.PhotoMapper">
+
+    <!-- 开启二级缓存 -->
+  <!--   <cache type="org.mybatis.caches.ehcache.LoggingEhcache"/> -->
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.sample.entity.Photo">
+        <id column="pho_id" property="pho_id" />
+        <result column="pho_wor_id" property="pho_wor_id" />
+        <result column="pho_class_id" property="pho_class_id" />
+        <result column="pho_album_id" property="pho_album_id" />
+        <result column="pho_type" property="pho_type" />
+        <result column="pho_name" property="pho_name" />
+        <result column="pho_describe" property="pho_describe" />
+        <result column="pho_url" property="pho_url" />
+        <result column="pho_html_url" property="pho_html_url" />
+        <result column="pho_chain_url" property="pho_chain_url" />
+        <result column="pho_creation" property="pho_creation" />
+        <result column="pho_lastupdated" property="pho_lastupdated" />
+        <result column="pho_isdel" property="pho_isdel" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        pho_id, pho_wor_id, pho_class_id, pho_album_id, pho_type, pho_name, pho_describe, pho_url, pho_html_url, pho_chain_url, pho_creation, pho_lastupdated, pho_isdel
+    </sql>
+    
+    <!-- 图片条件查询接口 -->
+    <select id="selectQuery" parameterType="com.sample.entity.Photo" resultMap="BaseResultMap">
+    	select <include refid="Base_Column_List"/> from photo
+    	where 1 
+    	<if test="pho_id!=null">and pho_id=#{pho_id}</if>
+		<if test="pho_wor_id!=null">and pho_wor_id=#{pho_wor_id}</if>
+		<if test="pho_class_id!=null">and pho_class_id=#{pho_class_id}</if>
+		<if test="pho_album_id!=null">and pho_album_id=#{pho_album_id}</if>
+		<if test="pho_type!=null">and pho_type=#{pho_type}</if>
+		<if test="pho_name!=null">and pho_name like concat('%',#{pho_name},'%')</if>
+		<if test="pho_creation!=null">and datediff(pho_creation,#{pho_creation})=0</if>
+		<if test="pho_isdel!=null">and pho_isdel=#{pho_isdel}</if>
+    </select>
+    
+      <!-- 图片添加接口 -->
+    <insert id="insert" parameterType="com.sample.entity.Photo">
+    	insert into photo values(null,#{pho_wor_id},#{pho_class_id},#{pho_album_id},#{pho_type},#{pho_name},#{pho_describe},#{pho_url},#{pho_html_url},#{pho_chain_url},now(),now(),#{pho_isdel}) 
+    </insert>
+    
+    <!-- 图片删除接口 -->
+    <delete id="delete" parameterType="com.sample.entity.Photo">
+    	delete from photo where pho_id=#{pho_id}
+    </delete>
+    
+    <!-- 图片修改接口 -->
+    <update id="update" parameterType="com.sample.entity.Photo">
+    	update photo set
+    	<if test="pho_class_id!=null">pho_class_id=#{pho_class_id},</if>
+    	<if test="pho_album_id!=null">pho_album_id=#{pho_album_id},</if>
+    	<if test="pho_type!=null">pho_type=#{pho_type},</if>
+    	<if test="pho_name!=null">pho_name=#{pho_name},</if>
+    	<if test="pho_describe!=null">pho_describe=#{pho_describe},</if>
+    	<if test="pho_url!=null">pho_url=#{pho_url},</if>
+    	<if test="pho_html_url!=null">pho_html_url=#{pho_html_url},</if>
+    	<if test="pho_chain_url!=null">pho_chain_url=#{pho_chain_url},</if>
+    	<if test="pho_isdel!=null">pho_isdel=#{pho_isdel},</if>
+    	pho_lastupdated=now()
+    	where pho_id=#{pho_id}
+    </update>
+
+</mapper>

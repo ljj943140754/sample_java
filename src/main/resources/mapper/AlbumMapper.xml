@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sample.mapper.AlbumMapper">
+
+    <!-- 开启二级缓存 -->
+   <!--  <cache type="org.mybatis.caches.ehcache.LoggingEhcache"/> -->
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.sample.entity.Album">
+        <id column="alb_id" property="alb_id" />
+        <result column="alb_wor_id" property="alb_wor_id" />
+        <result column="alb_classify_id" property="alb_classify_id" />
+        <result column="alb_name" property="alb_name" />
+        <result column="alb_describe" property="alb_describe" />
+        <result column="alb_visible" property="alb_visible" />
+        <result column="alb_creation" property="alb_creation" />
+        <result column="alb_createdby" property="alb_createdby" />
+        <result column="alb_lastupdated" property="alb_lastupdated" />
+        <result column="alb_lastupdatedby" property="alb_lastupdatedby" />
+        <result column="alb_isdel" property="alb_isdel" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        alb_id, alb_wor_id, alb_classify_id, alb_name, alb_describe, alb_visible, alb_creation, alb_createdby, alb_lastupdated, alb_lastupdatedby, alb_isdel
+    </sql>
+    
+    <!-- 相册条件查询 -->
+    <select id="selectQuery" parameterType="com.sample.entity.Album" resultMap="BaseResultMap">
+    	select <include refid="Base_Column_List"/>
+    	from album
+    	where 1
+    	<if test="alb_id!=null">and alb_id=#{alb_id}</if>
+		<if test="alb_wor_id!=null">and alb_wor_id=#{alb_wor_id}</if>
+		<if test="alb_classify_id!=null">and alb_classify_id=#{alb_classify_id}</if>
+		<if test="alb_name!=null">and alb_name like concat('%',#{alb_name},'%')</if>
+		<if test="alb_visible!=null">and alb_visible=#{alb_visible}</if>
+		<if test="alb_creation!=null">and datediff(alb_creation,#{alb_creation})=0</if>
+		<if test="alb_isdel!=null">and alb_isdel=#{alb_isdel}</if>
+    </select>
+    
+    <!-- 相册添加接口 -->
+    <insert id="insert" parameterType="com.sample.entity.Album">
+    	insert into album values(null,#{alb_wor_id},#{alb_classify_id},#{alb_name},#{alb_describe},#{alb_visible},now(),#{alb_createdby},now(),#{alb_lastupdatedby},#{alb_isdel}) 
+    </insert>
+    
+    <!-- 相册删除接口 -->
+    <delete id="delete" parameterType="com.sample.entity.Album">
+    	delete from album where alb_id=#{alb_id}
+    </delete>
+    
+    <!-- 相册修改接口 -->
+    <update id="update" parameterType="com.sample.entity.Album">
+    	update album set
+    	<if test="alb_classify_id!=null">alb_classify_id=#{alb_classify_id},</if>
+    	<if test="alb_name!=null">alb_name=#{alb_name},</if>
+    	<if test="alb_describe!=null">alb_describe=#{alb_describe},</if>
+    	<if test="alb_visible!=null">alb_visible=#{alb_visible},</if>
+    	<if test="alb_isdel!=null">alb_isdel=#{alb_isdel},</if>
+    	<if test="alb_lastupdatedby!=null">alb_lastupdatedby=#{alb_lastupdatedby},</if>
+    	alb_lastupdated=now()
+    	where alb_id=#{alb_id}
+    </update>
+
+</mapper>

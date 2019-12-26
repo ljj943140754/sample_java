@@ -1,0 +1,57 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.sample.mapper.ClassifyMapper">
+
+    <!-- 开启二级缓存 -->
+   <!--  <cache type="org.mybatis.caches.ehcache.LoggingEhcache"/> -->
+
+    <!-- 通用查询映射结果 -->
+    <resultMap id="BaseResultMap" type="com.sample.entity.Classify">
+        <id column="cla_id" property="cla_id" />
+        <result column="cla_wor_id" property="cla_wor_id" />
+        <result column="cla_class_name" property="cla_class_name" />
+        <result column="cla_describe" property="cla_describe" />
+        <result column="cla_creation" property="cla_creation" />
+        <result column="cla_createdby" property="cla_createdby" />
+        <result column="cla_lastupdated" property="cla_lastupdated" />
+        <result column="cla_lastupdatedby" property="cla_lastupdatedby" />
+        <result column="cla_isdel" property="cla_isdel" />
+    </resultMap>
+
+    <!-- 通用查询结果列 -->
+    <sql id="Base_Column_List">
+        cla_id, cla_wor_id, cla_class_name, cla_describe, cla_creation, cla_createdby, cla_lastupdated, cla_lastupdatedby, cla_isdel
+    </sql>
+    
+	<!-- 分类条件查询 -->
+	<select id="selectQuery" parameterType="com.sample.entity.Classify" resultMap="BaseResultMap">
+		select <include refid="Base_Column_List"/> from classify
+		where 1 
+		<if test="cla_id!=null">and cla_id=#{cla_id}</if>
+		<if test="cla_wor_id!=null">and cla_wor_id=#{cla_wor_id}</if>
+		<if test="cla_class_name!=null">and cla_class_name like concat('%',#{cla_class_name},'%')</if>
+		<if test="cla_creation!=null">and datediff(cla_creation,#{cla_creation})=0</if>
+		<if test="cla_isdel!=null">and cla_isdel=#{cla_isdel}</if>
+	</select>
+	
+	  <!-- 分类添加接口 -->
+    <insert id="insert" parameterType="com.sample.entity.Classify">
+    	insert into classify values(null,#{cla_wor_id},#{cla_class_name},#{cla_describe},now(),#{cla_createdby},now(),#{cla_lastupdatedby},#{cla_isdel}) 
+    </insert>
+    
+    <!-- 分类删除接口 -->
+    <delete id="delete" parameterType="com.sample.entity.Classify">
+    	delete from classify where cla_id=#{cla_id}
+    </delete>
+    
+    <!-- 分类修改接口 -->
+    <update id="update" parameterType="com.sample.entity.Classify">
+    	update classify set
+    	<if test="cla_class_name!=null">cla_class_name=#{cla_class_name},</if>
+    	<if test="cla_describe!=null">cla_describe=#{cla_describe},</if>
+    	<if test="cla_isdel!=null">cla_isdel=#{cla_isdel},</if>
+    	<if test="cla_lastupdatedby!=null">cla_lastupdatedby=#{cla_lastupdatedby},</if>
+    	cla_lastupdated=now()
+    	where cla_id=#{cla_id}
+    </update>
+</mapper>
